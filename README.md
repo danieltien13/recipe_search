@@ -6,3 +6,5 @@ Setup:
 
 Run app:
 `streamlit run recipe_search.py`
+
+App will run at localhost:8501 in your web browser
