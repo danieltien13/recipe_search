@@ -1,2 +1,8 @@
 # recipe_search
-use NLP to search for recipes of interest
+Use NLP to search for recipes of interest
+
+Setup:
+`pip install -r requirements.txt`
+
+Run app:
+`streamlit run recipe_search.py`
