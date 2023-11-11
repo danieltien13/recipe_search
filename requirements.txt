@@ -1,3 +1,4 @@
 streamlit
 st-gsheets-connection
 sentence_transformers
+torch
