@@ -1,6 +1,8 @@
 # recipe_search
 Use NLP to search for recipes of interest
 
+Deployed here! [https://dtienrecipesearch.streamlit.app/](https://dtienrecipesearch.streamlit.app/)
+
 Setup:
 `pip install -r requirements.txt`
 
