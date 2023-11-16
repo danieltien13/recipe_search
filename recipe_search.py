@@ -4,6 +4,7 @@ from sentence_transformers import SentenceTransformer
 import torch
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
+import typing
 
 spreadsheet = "https://docs.google.com/spreadsheets/d/1oboE6E4MVZ538GilwB2Pvgm6249QxT6E8lkJzsL4yEk/edit#gid=0"
 
@@ -16,7 +17,7 @@ st.set_page_config(
 )
 
 @st.cache_data(ttl=3600*24*30)
-def presearch(df: pd.DataFrame) -> torch.Tensor:
+def presearch(df: pd.DataFrame) -> typing.Tuple:
     """
     Run all necessary computations before the search starts including:
     1. Loading the NLP sentence similarity model
@@ -27,20 +28,22 @@ def presearch(df: pd.DataFrame) -> torch.Tensor:
     sentences = list(df["title"])
     model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
     embeddings = model.encode(sentences)
-    return embeddings
+    return (embeddings, model)
 
 @st.cache_data(ttl=3600*24*30)
-def create_search_embedding(sentence: str) -> torch.Tensor:
+def create_search_embedding(sentence: str, _model) -> torch.Tensor:
     """
+    Takes in a search text and NLP model and outputs an embedding to 
+    compare against the embedding dataset
     """
-    model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
-    search_embedding = model.encode(sentence)
+    search_embedding = _model.encode(sentence)
     return search_embedding
 
 @st.cache_data(ttl=3600*24*30)
 def find_search_results(embeddings: torch.Tensor, search_embedding: torch.Tensor) -> pd.DataFrame:
     """
-    
+    Takes in an embedding dataset and a search embedding and performs
+    a cosine similarity search ranking.
     """
     results = []
     search_emb = search_embedding.reshape(1,-1)
@@ -63,10 +66,10 @@ df = conn.read()
 
 text_search = st.text_input("Search for your favorite recipes!")
 
-embeddings = presearch(df)
+embeddings, model = presearch(df)
 
 if text_search:
-    search_embedding = create_search_embedding(text_search)
+    search_embedding = create_search_embedding(text_search, model)
     df_search = find_search_results(embeddings, search_embedding)
 
     df_search = df_search.merge(df, left_index=True, right_index=True)
