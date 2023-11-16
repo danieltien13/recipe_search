@@ -61,16 +61,9 @@ conn = st.connection("gsheets", type=GSheetsConnection)
 
 df = conn.read()
 
-# just play around with 100 examples for now
-df = df.iloc[:1000]
-
 text_search = st.text_input("Search for your favorite recipes!")
 
 embeddings = presearch(df)
-
-# st.write(df.head())
-
-# st.write(embeddings)
 
 if text_search:
     search_embedding = create_search_embedding(text_search)
@@ -78,7 +71,7 @@ if text_search:
 
     df_search = df_search.merge(df, left_index=True, right_index=True)
 
-    for n_row, row in df_search.reset_index().iterrows():
+    for n_row, row in df_search.iloc[:100].reset_index().iterrows():
         # draw a line if there is a new row
         if n_row%CARDS_PER_ROW == 0:
             st.write("---")
