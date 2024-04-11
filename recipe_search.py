@@ -15,6 +15,8 @@ st.set_page_config(
     page_title="Recipe Search Engine",
     page_icon=":female-cook:"
 )
+st.write("v0.0.1")
+
 
 @st.cache_data(ttl=3600*24*30)
 def presearch(df: pd.DataFrame) -> typing.Tuple:
@@ -30,6 +32,7 @@ def presearch(df: pd.DataFrame) -> typing.Tuple:
     embeddings = model.encode(sentences)
     return (embeddings, model)
 
+
 @st.cache_data(ttl=3600*24*30)
 def create_search_embedding(sentence: str, _model) -> torch.Tensor:
     """
@@ -39,24 +42,25 @@ def create_search_embedding(sentence: str, _model) -> torch.Tensor:
     search_embedding = _model.encode(sentence)
     return search_embedding
 
-@st.cache_data(ttl=3600*24*30)
+
 def find_search_results(embeddings: torch.Tensor, search_embedding: torch.Tensor) -> pd.DataFrame:
     """
     Takes in an embedding dataset and a search embedding and performs
     a cosine similarity search ranking.
     """
     results = []
-    search_emb = search_embedding.reshape(1,-1)
+    search_emb = search_embedding.reshape(1, -1)
     for n_emb, embedding in enumerate(embeddings):
         row = {}
-        emb = embedding.reshape(1,-1)
+        emb = embedding.reshape(1, -1)
 
         cos_sim = cosine_similarity(search_emb, emb)[0]
         row["index"] = n_emb
         row["cos_sim"] = cos_sim
         results.append(row)
-        
+
     return pd.DataFrame(results).sort_values(by="cos_sim", ascending=False)
+
 
 st.title("Recipe Search Engine :shallow_pan_of_food: :female-cook:")
 
@@ -76,14 +80,13 @@ if text_search:
 
     for n_row, row in df_search.iloc[:100].reset_index().iterrows():
         # draw a line if there is a new row
-        if n_row%CARDS_PER_ROW == 0:
+        if n_row % CARDS_PER_ROW == 0:
             st.write("---")
             cols = st.columns(CARDS_PER_ROW, gap="large")
-        with cols[n_row%CARDS_PER_ROW]:
+        with cols[n_row % CARDS_PER_ROW]:
             st.write(f"{row['title']}")
             st.markdown("Ingredients: " + row['NER'][1:-1])
             # for item in row['NER'][1:-1].split(","):
             #     st.markdown(" - " + item.strip('"').strip())
             st.write(f"{row['link']}")
             st.write(f"Score: {row['cos_sim'][0]:.2f}")
-
