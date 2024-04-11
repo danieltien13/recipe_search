@@ -15,7 +15,6 @@ st.set_page_config(
     page_title="Recipe Search Engine",
     page_icon=":female-cook:"
 )
-st.write("v0.0.1")
 
 
 @st.cache_data(ttl=3600*24*30)
@@ -63,6 +62,7 @@ def find_search_results(embeddings: torch.Tensor, search_embedding: torch.Tensor
 
 
 st.title("Recipe Search Engine :shallow_pan_of_food: :female-cook:")
+st.write("v0.0.1")
 
 conn = st.connection("gsheets", type=GSheetsConnection)
 
