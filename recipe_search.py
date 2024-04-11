@@ -27,7 +27,8 @@ def presearch(df: pd.DataFrame) -> typing.Tuple:
     Returns the embeddings that captures sentence semantics 
     """
     sentences = list(df["title"])
-    model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
+    model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+    # model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
     embeddings = model.encode(sentences)
     return (embeddings, model)
 
@@ -62,7 +63,7 @@ def find_search_results(embeddings: torch.Tensor, search_embedding: torch.Tensor
 
 
 st.title("Recipe Search Engine :shallow_pan_of_food: :female-cook:")
-st.write("v0.0.1")
+
 
 conn = st.connection("gsheets", type=GSheetsConnection)
 
